@@ -22,10 +22,10 @@ public class TestrisMachine
 		
 		while (true)
 		{
-			while (!TetrisML.mf.isGameOver)
-				myMachine.run();
+			//while (!TetrisML.mf.isGameOver)
+				//myMachine.run();
 			
-			TetrisML.mf.restart();
+			//TetrisML.mf.restart();
 		}
 	}
 }

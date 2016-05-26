@@ -662,6 +662,7 @@ extends JFrame {
     	{
     		
     	}
+    	
         if (this.isGameOver) {
             return;
         }

@@ -129,6 +129,7 @@ lbl-1000: // 1 sources:
             iter.remove();
             ++lines;
         }
+        
         switch (lines) {
             case 1: {
                 this.score += 100 + 5 * this.level;
