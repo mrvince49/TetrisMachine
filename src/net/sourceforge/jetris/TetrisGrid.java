@@ -86,8 +86,8 @@ lbl-1000: // 1 sources:
         }
         return false;
     }
-
-    boolean isNextMoveValid(Figure f, int xOffset, int yOffset) {
+    // OH NO WHAT HAVE I DONE
+    public boolean isNextMoveValid(Figure f, int xOffset, int yOffset) {
         boolean b = true;
         try {
             int j = 0;

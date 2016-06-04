@@ -20,12 +20,12 @@ public abstract class Figure {
     protected static final Color COL_J = Color.MAGENTA;
     protected static final Color COL_S = Color.BLUE;
     protected static final Color COL_Z = Color.GREEN;
-    protected int[] arrX;
-    protected int[] arrY;
-    protected int offsetX;
-    protected int offsetY;
-    protected int offsetXLast;
-    protected int offsetYLast;
+    public int[] arrX;
+    public int[] arrY;
+    public int offsetX;
+    public int offsetY;
+    public int offsetXLast;
+    public int offsetYLast;
 
     protected Figure(int[] arrX, int[] arrY) {
         this.arrX = arrX;

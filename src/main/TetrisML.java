@@ -23,6 +23,7 @@ public class TetrisML
 	public static int[] positiveMoves = {1, 4}; // setting piece down, clearing rows
 	public static int[] negativeMoves = {-3, -2}; // hole formed, height penalty
 	public static int numHoles, numPrevHoles;
+	public static Figure myFigure;
 
 	public TetrisML()
 	{
@@ -66,6 +67,8 @@ public class TetrisML
 		
 		numHoles = 0;
 		numPrevHoles = 0;
+		
+		myFigure = mf.f;
 	}
 
 	// Assume at start that the game state is an empty board
@@ -73,7 +76,8 @@ public class TetrisML
 	{
 		// every time a new figure is generated, read the game state
 		// the readGameState method is called in the JetrisMainFrame class by the method "dropNext"
-		try 
+		
+		/*try 
 		{
 				Thread.sleep(10);
 		} 
@@ -81,10 +85,136 @@ public class TetrisML
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		
+		//System.out.println(myFigure.offsetX);
+		//System.out.println(myFigure.offsetY);
+		
+		// holds the calculated fitness for each move
+		int[][] fitnessForMoves = new int[10][3];
+		
+		//first check across the columns
+		
+		for (int col = 0; col < 10; col++)
+		{
+			//Moves the piece into the designated column
+			for (int numMoves = Math.abs(5 - col); numMoves > 0; numMoves--)
+			{
+				if (5 - col < 0)
+				{
+					myRobot.keyPress(KeyEvent.VK_RIGHT);
+					myRobot.keyRelease(KeyEvent.VK_RIGHT);
+				}
+				else
+				{
+					myRobot.keyPress(KeyEvent.VK_LEFT);
+					myRobot.keyRelease(KeyEvent.VK_LEFT);
+				}
+			}
 			
-		myRobot.keyPress(KeyEvent.VK_SPACE);
-		myRobot.keyRelease(KeyEvent.VK_SPACE);	
+			for (int config = 0; config < 4; config++)
+			{
+				// GET POTENTIAL BOARD STATE
+				// GENERATE FITNESS
+				// INSERT FITNESS INTO ARRAY
+				// MAKE DECISION BASED OFF THAT
+				
+				boolean[][] possible = getPossibleBoardState(board, myFigure);
+				
+				/*try
+				{
+					Thread.sleep(1000);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}*/
+				
+				myRobot.keyPress(KeyEvent.VK_UP);
+				myRobot.keyRelease(KeyEvent.VK_UP);
+			}
+		}
+	}
+
+	private static boolean[][] getPossibleBoardState(boolean[][] state, Figure f) 
+	{
+		//While the piece does not have a block underneath it in any location,
+		// Simulate the piece moving down
+		// Once the piece has hit a "wall", return the possible Board state
+		// Then the original method will calculate the fitness of that board state
+		
+		//System.out.println("New Possibility");
+		
+		boolean[][] possible = new boolean[20][10];
+		
+		for (int rows = 0; rows < possible.length; rows++)
+		{
+			for (int cols = 0; cols < possible[0].length; cols++)
+			{
+				possible[rows][cols] = state[rows][cols];
+			}
+		}
+		
+		int count = 0;
+		
+		while (mf.tg.isNextMoveValid(f, f.offsetX, f.offsetY + count)) //This is almost working
+			count++;
+		
+		//System.out.println("Original count: " + count);
+		
+		// Count goes one too far for some unknown reason
+		// We need to subtract one to get the correct position every time
+		count--;
+		
+		//System.out.println("The figure type: " + f.getClass());
+		//System.out.println("\nThe arrangement: ");
+		
+		/*for (int x = 0; x < f.arrX.length; x++)
+		{
+			System.out.print(f.arrX[x] + " ");
+		}*/
+		
+		//System.out.println("\n");
+		
+		/*for (int y = 0; y < f.arrY.length; y++)
+		{
+			System.out.print(f.arrY[y] + " ");
+		}*/
+		
+		//System.out.println();
+		
+		for (int x = 0; x < f.arrX.length; x++)
+		{
+			for (int y = 0; y < f.arrY.length; y++)
+			{
+				//System.out.println(f.offsetX + " " + (f.offsetY + count));
+				
+				//System.out.println((f.offsetY + count + f.arrY[y]) + " " + (f.offsetX + f.arrX[x]) + " " + f.arrX[x] + " " + f.offsetX);
+				
+				// x must equal y for the block to exist in the arrangement, we don't
+				// want a Cartesian product of the arrangement
+				// We also need to make sure the y and x bounds are in range
+				
+				if (x == y && f.offsetY + count + f.arrY[y] < 20 && f.offsetX + f.arrX[x] >= 0 && f.offsetX + f.arrX[x] < 10 && f.offsetY + count + f.arrY[y] >= 0)
+					possible[f.offsetY + count + f.arrY[y]][f.offsetX + f.arrX[x]] = true;
+			}
+		}
+		
+		// Test output to ensure the possible stuff is working
+		/*for (int x = 0; x < possible.length; x++)
+		{
+			for (int y = 0; y < possible[x].length; y++)
+			{
+				if (possible[x][y])
+					System.out.print("1");
+				else
+					System.out.print("0");
+			}
+			System.out.println();
+		}
+		System.out.println();*/
+		
+		return possible;
 	}
 
 	/**
@@ -112,6 +242,8 @@ public class TetrisML
 					board[i][x]=false;
 			}
 		}
+		
+		// Debug statement to ensure this is working
 		System.out.println("Game State has been read");
 
 		/*for(int i = 0; i < board.length; i++)
@@ -137,6 +269,11 @@ public class TetrisML
 			}
 			System.out.println();
 		}*/
+	}
+	
+	public static void getFigure()
+	{
+		myFigure = mf.f;
 	}
 
 	public static void ReadGene(int gene, Robot myRobot)
@@ -194,7 +331,7 @@ public class TetrisML
 		 * while a bad move will have lower fitness.
 		 */
 		
-		fitness = rowsCleared() * positiveMoves[1];
+		//fitness = rowsCleared() * positiveMoves[1];
 		
 		return fitness;
 	}

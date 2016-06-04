@@ -660,7 +660,7 @@ extends JFrame {
     	}
     	catch(Exception e)
     	{
-    		
+    		//e.printStackTrace();
     	}
     	
         if (this.isGameOver) {
@@ -677,6 +677,16 @@ extends JFrame {
         this.isGameOver = this.tg.isGameOver(this.f);
         this.isNewFigureDropped = true;
         this.updateStats();
+        
+        // The figure is being dropped so we need to update the figure in the Machine Learning class
+        try
+        {
+        	TetrisML.getFigure();
+        }
+        catch (Exception e)
+        {
+        	//e.printStackTrace();
+        }
     }
 
     private void moveLeft() {
