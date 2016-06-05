@@ -24,6 +24,8 @@ public class TetrisML
 	public static int[] negativeMoves = {-3, -2}; // hole formed, height penalty
 	public static int numHoles, numPrevHoles;
 	public static Figure myFigure;
+	public static int numLinesCleared;
+	public static int prevHeight;
 
 	public TetrisML()
 	{
@@ -69,6 +71,10 @@ public class TetrisML
 		numPrevHoles = 0;
 		
 		myFigure = mf.f;
+		
+		numLinesCleared = 0;
+		
+		prevHeight = 0;
 	}
 
 	// Assume at start that the game state is an empty board
@@ -77,18 +83,26 @@ public class TetrisML
 		// every time a new figure is generated, read the game state
 		// the readGameState method is called in the JetrisMainFrame class by the method "dropNext"
 		
-		/*try 
+		//Debug statement
+		//System.out.println("Crash Statement 1");
+		
+		try 
 		{
-				Thread.sleep(10);
+				Thread.sleep(1000);
 		} 
 		catch (InterruptedException e) 
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		
 		//System.out.println(myFigure.offsetX);
 		//System.out.println(myFigure.offsetY);
+		
+		// reset the number of lines cleared to ensure
+		// that there will be no issues
+		
+		numLinesCleared = 0;
 		
 		// holds the calculated fitness for each move
 		int[][] fitnessForMoves = new int[10][3];
@@ -98,9 +112,9 @@ public class TetrisML
 		for (int col = 0; col < 10; col++)
 		{
 			//Moves the piece into the designated column
-			for (int numMoves = Math.abs(5 - col); numMoves > 0; numMoves--)
+			for (int numMoves = Math.abs(4 - col); numMoves > 0; numMoves--)
 			{
-				if (5 - col < 0)
+				if (4 - col < 0)
 				{
 					myRobot.keyPress(KeyEvent.VK_RIGHT);
 					myRobot.keyRelease(KeyEvent.VK_RIGHT);
@@ -112,18 +126,18 @@ public class TetrisML
 				}
 			}
 			
-			for (int config = 0; config < 4; config++)
+			for (int config = 0; config < 3; config++)
 			{
 				// GET POTENTIAL BOARD STATE
 				// GENERATE FITNESS
 				// INSERT FITNESS INTO ARRAY
 				// MAKE DECISION BASED OFF THAT
 				
-				boolean[][] possible = getPossibleBoardState(board, myFigure);
+				fitnessForMoves[col][config] = fitness(getPossibleBoardState(board, myFigure));
 				
 				/*try
 				{
-					Thread.sleep(1000);
+					Thread.sleep(10);
 				}
 				catch (InterruptedException e)
 				{
@@ -134,11 +148,121 @@ public class TetrisML
 				myRobot.keyRelease(KeyEvent.VK_UP);
 			}
 		}
+		
+		//Debug statement
+		System.out.println("Crash Statement 2");
+		
+		// Prints out the fitness array just to see what it is calculating
+		
+		for (int i = 0; i < fitnessForMoves.length; i++)
+		{
+			for (int col = 0; col < fitnessForMoves[i].length; col++)
+			{
+				System.out.print(fitnessForMoves[i][col] + " ");
+			}
+			
+			System.out.println();
+		}
+		
+		System.out.println("Crash Statement 3");
+		
+		// Reset the robot's position, including configuration and position
+		myRobot.keyPress(KeyEvent.VK_UP);
+		myRobot.keyRelease(KeyEvent.VK_UP);
+		
+		// Kind of cheating but whatever
+		while (myFigure.offsetX > 4)
+		{
+			myRobot.keyPress(KeyEvent.VK_LEFT);
+			myRobot.keyRelease(KeyEvent.VK_LEFT);
+			
+			/*try
+			{
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}*/
+		}
+		
+		/*try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}*/
+		
+		// To ensure that we have a max fitness, use min fitness value
+		// In case we have any overly negative values that still end 
+		// up being the best move because that can happen
+		
+		int maxFitness = Integer.MIN_VALUE;
+		
+		// Holds the value of the column we want to drop the piece into
+		int column = -1;
+		
+		// Holds the number of turns we want to make for the piece
+		int rotations = 0;
+		
+		for (int rows = 0; rows < fitnessForMoves.length; rows++)
+		{
+			for (int cols = 0; cols < fitnessForMoves[rows].length; cols++)
+			{
+				if (fitnessForMoves[rows][cols] > maxFitness)
+				{
+					maxFitness = fitnessForMoves[rows][cols];
+					column = rows; // Try not to get that mixed up
+					rotations = (cols + 1);
+				}
+			}
+		}
+		
+		
+		//Debug statement
+		System.out.println("Max fitness: " + maxFitness + " Column: " + column);
+		
+		if (column < 4) // robot needs to move left
+		{
+			for (int i = 1; i < (4 - column); i++) // check this
+			{
+				myRobot.keyPress(KeyEvent.VK_LEFT);
+				myRobot.keyRelease(KeyEvent.VK_LEFT);
+			}
+		}
+		else if (column > 4) // robot needs to move right
+		{
+			for (int i = 0; i < (column - 4); i++)
+			{
+				myRobot.keyPress(KeyEvent.VK_RIGHT);
+				myRobot.keyRelease(KeyEvent.VK_RIGHT);
+			}
+		}
+		
+		// robot does not need to move if its column value equals 4 since
+		// it is already there
+		
+		for (int i = 0; i < rotations; i++)
+		{
+			myRobot.keyPress(KeyEvent.VK_UP);
+			myRobot.keyRelease(KeyEvent.VK_UP);
+		}
+		
+		// Now is the moment you have all been waiting for:
+		// The moment where we place the piece!
+		
+		//Debug statement
+		System.out.println("Dropping the piece");
+		
+		myRobot.keyPress(KeyEvent.VK_SPACE);
+		myRobot.keyRelease(KeyEvent.VK_SPACE);
 	}
 
 	private static boolean[][] getPossibleBoardState(boolean[][] state, Figure f) 
 	{
-		//While the piece does not have a block underneath it in any location,
+		// While the piece does not have a block underneath it in any location,
 		// Simulate the piece moving down
 		// Once the piece has hit a "wall", return the possible Board state
 		// Then the original method will calculate the fitness of that board state
@@ -157,13 +281,14 @@ public class TetrisML
 		
 		int count = 0;
 		
-		while (mf.tg.isNextMoveValid(f, f.offsetX, f.offsetY + count)) //This is almost working
+		while (mf.tg.isNextMoveValid(f, f.offsetX, f.offsetY + count)) 
 			count++;
 		
 		//System.out.println("Original count: " + count);
 		
 		// Count goes one too far for some unknown reason
 		// We need to subtract one to get the correct position every time
+		
 		count--;
 		
 		//System.out.println("The figure type: " + f.getClass());
@@ -276,7 +401,7 @@ public class TetrisML
 		myFigure = mf.f;
 	}
 
-	public static void ReadGene(int gene, Robot myRobot)
+	/*public static void ReadGene(int gene, Robot myRobot)
 	{
 		int left,turn,right;
 
@@ -308,7 +433,7 @@ public class TetrisML
 			myRobot.keyRelease(KeyEvent.VK_LEFT);
 		}
 		//turn loop
-		for(int i=0;i<turn;i++)
+	 	for(int i=0;i<turn;i++)
 		{
 			myRobot.keyPress(KeyEvent.VK_UP);
 			myRobot.keyRelease(KeyEvent.VK_UP);
@@ -320,9 +445,9 @@ public class TetrisML
 			myRobot.keyRelease(KeyEvent.VK_RIGHT);
 		}
 		myRobot.keyPress(KeyEvent.VK_SPACE);
-	}
+	}*/
 	
-	public static int fitness(int gene)
+	public static int fitness(boolean[][] possibleBoardState)
 	{
 		int fitness = 0;
 		
@@ -331,7 +456,16 @@ public class TetrisML
 		 * while a bad move will have lower fitness.
 		 */
 		
-		//fitness = rowsCleared() * positiveMoves[1];
+		int newHeight = height(possibleBoardState);
+		numLinesCleared(possibleBoardState);
+		getHoles(possibleBoardState);
+		
+		fitness = numLinesCleared * positiveMoves[1] + (numHoles - numPrevHoles) * negativeMoves[0] + positiveMoves[0] + (newHeight - prevHeight) * negativeMoves[1];
+		
+		// set prevHeight to newHeight to ensure everything is fine
+		
+		prevHeight = newHeight;
+		numPrevHoles = numHoles;
 		
 		return fitness;
 	}
@@ -343,20 +477,20 @@ public class TetrisML
 	 * so that a penalty may be appropriated
 	 * @return An integer value indicating the number of holes in the board
 	 */
-	public static void getHoles()
+	public static void getHoles(boolean[][] grid)
 	{
 		int count = 0;
 		
 		// x = rows, y = columns
-		for (int x = 0; x < board.length; x++) // rows down
+		for (int x = 0; x < grid.length; x++) // rows down
 		{
-			for (int y = 0; y < board[x].length; y++) // columns across
+			for (int y = 0; y < grid[x].length; y++) // columns across
 			{
-				if (board[x][y] == false) // false indicates a possible hole, then we must check around the area
+				if (grid[x][y] == false) // false indicates a possible hole, then we must check around the area
 				{
 					if (x - 1 >= 0 && x + 1 < 20 && y + 1 < 10 && y - 1 >= 0) //to ensure we don't go out of bounds, middle hole
 					{
-						if (board[x - 1][y] && board[x][y + 1] && board[x][y - 1] && board[x + 1][y])
+						if (grid[x - 1][y] && grid[x][y + 1] && grid[x][y - 1] && grid[x + 1][y])
 						{
 							count++;
 						}
@@ -367,12 +501,12 @@ public class TetrisML
 						{
 							if (x + 1 < 20 && x - 1 >= 0) // indicates a possible hole on left side but not on bottom
 							{
-								if (board[x - 1][y] && board[x - 1][y+1] && board[x][y+1] && board[x + 1][y + 1] && board[x+1][y])
+								if (grid[x - 1][y] && grid[x - 1][y+1] && grid[x][y+1] && grid[x + 1][y + 1] && grid[x+1][y])
 									count++;
 							}
 							else if (x + 1 == 20) // indicates a possible hole in left bottom corner
 							{
-								if (board[x - 1][y] && board[x - 1][y + 1] && board[x][y + 1])
+								if (grid[x - 1][y] && grid[x - 1][y + 1] && grid[x][y + 1])
 									count++;
 							}
 						}
@@ -380,18 +514,18 @@ public class TetrisML
 						{
 							if (x + 1 < 20 && x - 1 >= 0) // indicates a possible hole on right side but not on bottom
 							{
-								if (board[x + 1][y] && board[x + 1][y - 1] && board[x][y - 1] && board[x + 1][y - 1] && board[x + 1][y])
+								if (grid[x + 1][y] && grid[x + 1][y - 1] && grid[x][y - 1] && grid[x + 1][y - 1] && grid[x + 1][y])
 									count++;
 							}
 							else if(x + 1 == 20) // indicates a possible hole in right bottom corner
 							{
-								if (board[x - 1][y] && board[x - 1][y - 1] && board[x][y - 1])
+								if (grid[x - 1][y] && grid[x - 1][y - 1] && grid[x][y - 1])
 									count++;
 							}
 						}
 						else if (x + 1 == 20)// bottom hole?
 						{
-							if (board[x][y - 1] && board[x - 1][y - 1] && board[x - 1][y] && board[x - 1][y + 1] && board[x][y + 1])
+							if (grid[x][y - 1] && grid[x - 1][y - 1] && grid[x - 1][y] && grid[x - 1][y + 1] && grid[x][y + 1])
 								count++;
 						}
 					}
@@ -399,8 +533,76 @@ public class TetrisML
 			}
 		}
 		
-		numPrevHoles = numHoles;
 		numHoles = count;
+	}
+	
+	/*public static void calculateHoles(boolean[][] grid)
+	{
+		
+	}*/
+	
+	/**
+	 * Determines the number of lines that will be cleared in a possible board state
+	 * @param grid is a two dimensional boolean array that represents the possible board state after a move is made
+	 */
+	public static void numLinesCleared(boolean[][] grid)
+	{
+		int count = 0;
+		
+		for (int rows = 0; rows < grid.length; rows++)
+		{
+			boolean fullLine = true;
+			
+			for (int cols = 0; cols < grid[0].length; cols++)
+			{
+				if (!grid[rows][cols])
+				{
+					fullLine = false;
+					// Exit the inner loop
+					cols = 10;
+				}
+			}
+			
+			if(fullLine)
+				count++;
+		}
+		
+		numLinesCleared = count;
+	}
+	
+	public static int height(boolean[][] possibleBoardState)
+	{
+		int height = 0;
+		
+		for (int y = 19; y >= 0; y--)
+		{
+			boolean found = false;
+			
+			for (int x = 0; x < 10; x++)
+			{
+				if (possibleBoardState[y][x] && possibleBoardState[y][x] != board[y][x])
+				{
+					found = true;
+					height++;
+					// Terminate inner loop
+					x = 10;
+				}
+			}
+			
+			// If a true value is found, keep going
+			// However, if no true values are found, terminate the outer loop
+			// and return the height
+			if (!found)
+			{
+				y = -1;
+			}
+			else
+			{
+				found = false;
+			}
+		}
+		
+		return height;
 	}
 }
 

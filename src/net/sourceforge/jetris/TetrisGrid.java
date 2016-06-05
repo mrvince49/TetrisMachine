@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import javax.swing.JOptionPane;
 import net.sourceforge.jetris.Figure;
 import net.sourceforge.jetris.io.HiScore;
+import main.TetrisML;
 
 public class TetrisGrid
 implements Serializable {

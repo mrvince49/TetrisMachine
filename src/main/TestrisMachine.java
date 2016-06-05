@@ -23,7 +23,21 @@ public class TestrisMachine
 		while (true)
 		{
 			while (!TetrisML.mf.isGameOver)
-				myMachine.run();
+			{
+				if (!TetrisML.mf.isPause)
+					myMachine.run();
+			}
+			
+			System.out.println("***************** Restarting Game *****************");
+			
+			try
+			{
+				Thread.sleep(5000);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 			
 			TetrisML.mf.restart();
 		}

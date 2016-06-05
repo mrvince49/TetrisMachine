@@ -88,7 +88,7 @@ extends JFrame {
     private FigureFactory ff;
     public boolean isNewFigureDropped; // NO I DESERVE THIS THE GUY SPELLED "DROPPED" AS "DROPED" PLEBIANS, SURROUNDED BY PLEBIANS
     public boolean isGameOver; // Its an addiction, I have to feed it
-    private boolean isPause;
+    public boolean isPause; // Well I can always do another one... TO FEED MY ADDICTION!!!
     private Color nextBg;
     private TimeThread tt;
     private KeyListener keyHandler;
