@@ -713,6 +713,8 @@ extends JFrame {
         if (this.isGameOver || this.isPause) {
             return;
         }
+        
+        
         ++this.nextY;
         this.nextMove();
     }
@@ -878,7 +880,7 @@ extends JFrame {
         }
 
         public void run() {
-            try {
+            try {	
                 do {
                     if (JetrisMainFrame.this.isGameOver || JetrisMainFrame.this.isPause) {
                         Thread.sleep(50);

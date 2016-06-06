@@ -2,6 +2,7 @@
  * Decompiled with CFR 0_114.
  */
 package net.sourceforge.jetris;
+import main.TetrisML;
 
 import java.awt.Color;
 

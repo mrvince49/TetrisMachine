@@ -8,6 +8,7 @@ package main;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import net.sourceforge.jetris.Figure;
 import net.sourceforge.jetris.FigureFactory;
 import net.sourceforge.jetris.JetrisMainFrame;
@@ -25,7 +26,7 @@ public class TetrisML
 	public static int numHoles, numPrevHoles;
 	public static Figure myFigure;
 	public static int numLinesCleared;
-	public static int prevHeight;
+	//public static int prevHeight;
 
 	public TetrisML()
 	{
@@ -74,7 +75,7 @@ public class TetrisML
 		
 		numLinesCleared = 0;
 		
-		prevHeight = 0;
+		//prevHeight = 0;
 	}
 
 	// Assume at start that the game state is an empty board
@@ -86,7 +87,7 @@ public class TetrisML
 		//Debug statement
 		//System.out.println("Crash Statement 1");
 		
-		try 
+		/*try 
 		{
 				Thread.sleep(1000);
 		} 
@@ -94,7 +95,7 @@ public class TetrisML
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		//System.out.println(myFigure.offsetX);
 		//System.out.println(myFigure.offsetY);
@@ -104,15 +105,81 @@ public class TetrisML
 		
 		numLinesCleared = 0;
 		
+		String myFigureType = myFigure.toString();
+		int columns = 0;
+		int configurations = 0;
+		
+		switch (myFigureType)
+		{
+			case "S":
+			{
+				columns = 10;
+				configurations = 2;
+				break;
+			}
+			case "Z":
+			{
+				columns = 10;
+				configurations  = 2;
+				break;
+			}
+			case "O":
+			{
+				columns = 9;
+				configurations = 1;
+				break;
+			}
+			case "I":
+			{
+				columns = 10;
+				configurations = 2;
+				break;
+			}
+			case "T":
+			{
+				columns = 10;
+				configurations = 4;
+				break;
+			}
+			case "J":
+			{
+				columns = 10;
+				configurations = 4;
+				break;
+			}
+			default:
+			{
+				// Only figure not used: L
+				columns = 10;
+				configurations = 4;
+			}
+		}
 		// holds the calculated fitness for each move
-		int[][] fitnessForMoves = new int[10][3];
+		int[][] fitnessForMoves = new int[columns][configurations];
 		
 		//first check across the columns
 		
-		for (int col = 0; col < 10; col++)
+		//Start on left
+		for (int i = 0; i < 4; i++)
+		{
+			myRobot.keyPress(KeyEvent.VK_LEFT);
+			myRobot.keyRelease(KeyEvent.VK_LEFT);
+		}
+		
+		try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		
+		System.out.println("New Piece");
+		for (int col = 0; col < fitnessForMoves.length; col++)
 		{
 			//Moves the piece into the designated column
-			for (int numMoves = Math.abs(4 - col); numMoves > 0; numMoves--)
+			/*for (int numMoves = Math.abs(4 - col); numMoves > 0; numMoves--)
 			{
 				if (4 - col < 0)
 				{
@@ -124,9 +191,16 @@ public class TetrisML
 					myRobot.keyPress(KeyEvent.VK_LEFT);
 					myRobot.keyRelease(KeyEvent.VK_LEFT);
 				}
-			}
+			}*/
 			
-			for (int config = 0; config < 3; config++)
+			if (col >= 1)
+			{
+				myRobot.keyPress(KeyEvent.VK_RIGHT);
+				myRobot.keyRelease(KeyEvent.VK_RIGHT);
+			}
+				
+			
+			for (int config = 0; config < fitnessForMoves[col].length; config++)
 			{
 				// GET POTENTIAL BOARD STATE
 				// GENERATE FITNESS
@@ -147,10 +221,14 @@ public class TetrisML
 				myRobot.keyPress(KeyEvent.VK_UP);
 				myRobot.keyRelease(KeyEvent.VK_UP);
 			}
+			
+			// Reset the configuration
+			/*myRobot.keyPress(KeyEvent.VK_UP);
+			myRobot.keyRelease(KeyEvent.VK_UP);*/
 		}
 		
 		//Debug statement
-		System.out.println("Crash Statement 2");
+		//System.out.println("Crash Statement 2");
 		
 		// Prints out the fitness array just to see what it is calculating
 		
@@ -164,17 +242,21 @@ public class TetrisML
 			System.out.println();
 		}
 		
-		System.out.println("Crash Statement 3");
+		System.out.println();
+		//System.out.println("Crash Statement 3");
 		
 		// Reset the robot's position, including configuration and position
-		myRobot.keyPress(KeyEvent.VK_UP);
-		myRobot.keyRelease(KeyEvent.VK_UP);
+		// Configuration is reset in config while loop
+		/*myRobot.keyPress(KeyEvent.VK_UP);
+		myRobot.keyRelease(KeyEvent.VK_UP);*/
+		
 		
 		// Kind of cheating but whatever
-		while (myFigure.offsetX > 4)
+		//System.out.println("Offset: " + myFigure.offsetX);
+		/*while (myFigure.offsetX > 4)
 		{
 			myRobot.keyPress(KeyEvent.VK_LEFT);
-			myRobot.keyRelease(KeyEvent.VK_LEFT);
+			myRobot.keyRelease(KeyEvent.VK_LEFT);*/
 			
 			/*try
 			{
@@ -184,16 +266,31 @@ public class TetrisML
 			{
 				e.printStackTrace();
 			}*/
+		//}
+		
+		//System.out.println("Offset: " + myFigure.offsetX);
+		
+		/*while (myFigure.offsetX < 4)
+		{
+			myRobot.keyPress(KeyEvent.VK_RIGHT);
+			myRobot.keyRelease(KeyEvent.VK_RIGHT);
+		}*/
+		
+		
+		for (int x = 0; x < 4; x++)
+		{
+			myRobot.keyPress(KeyEvent.VK_LEFT);
+			myRobot.keyRelease(KeyEvent.VK_LEFT);
 		}
 		
-		/*try
+		try
 		{
 			Thread.sleep(1000);
 		}
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
-		}*/
+		}
 		
 		// To ensure that we have a max fitness, use min fitness value
 		// In case we have any overly negative values that still end 
@@ -220,9 +317,17 @@ public class TetrisML
 			}
 		}
 		
-		
 		//Debug statement
-		System.out.println("Max fitness: " + maxFitness + " Column: " + column);
+		//System.out.println("Max fitness: " + maxFitness + " Column: " + column + " Config: " + rotations);
+		
+		/*try
+		{
+			Thread.sleep(1000);
+		}
+		catch(InterruptedException e)
+		{
+			e.printStackTrace();
+		}*/
 		
 		if (column < 4) // robot needs to move left
 		{
@@ -244,7 +349,7 @@ public class TetrisML
 		// robot does not need to move if its column value equals 4 since
 		// it is already there
 		
-		for (int i = 0; i < rotations; i++)
+		for (int i = 1; i < rotations; i++)
 		{
 			myRobot.keyPress(KeyEvent.VK_UP);
 			myRobot.keyRelease(KeyEvent.VK_UP);
@@ -254,10 +359,13 @@ public class TetrisML
 		// The moment where we place the piece!
 		
 		//Debug statement
-		System.out.println("Dropping the piece");
+		//System.out.println("Dropping the piece");
 		
 		myRobot.keyPress(KeyEvent.VK_SPACE);
 		myRobot.keyRelease(KeyEvent.VK_SPACE);
+		
+		// Set next values for next iteration
+		numPrevHoles = numHoles;
 	}
 
 	private static boolean[][] getPossibleBoardState(boolean[][] state, Figure f) 
@@ -326,7 +434,7 @@ public class TetrisML
 		}
 		
 		// Test output to ensure the possible stuff is working
-		/*for (int x = 0; x < possible.length; x++)
+ 		/*for (int x = 0; x < possible.length; x++)
 		{
 			for (int y = 0; y < possible[x].length; y++)
 			{
@@ -369,7 +477,7 @@ public class TetrisML
 		}
 		
 		// Debug statement to ensure this is working
-		System.out.println("Game State has been read");
+		//System.out.println("Game State has been read");
 
 		/*for(int i = 0; i < board.length; i++)
 		{
@@ -381,8 +489,8 @@ public class TetrisML
 					System.out.print("0");
 			}
 			System.out.println();
-		}
-		System.out.println("Previous Board State: ");
+		}*/
+		/*System.out.println("Previous Board State: ");
 		for(int i = 0; i < prevBoard.length; i++)
 		{
 			for (int x = 0; x < prevBoard[i].length; x++)
@@ -457,15 +565,26 @@ public class TetrisML
 		 */
 		
 		int newHeight = height(possibleBoardState);
+		int currentHeight = height(board);
 		numLinesCleared(possibleBoardState);
 		getHoles(possibleBoardState);
 		
-		fitness = numLinesCleared * positiveMoves[1] + (numHoles - numPrevHoles) * negativeMoves[0] + positiveMoves[0] + (newHeight - prevHeight) * negativeMoves[1];
+		fitness = numLinesCleared * positiveMoves[1] + (numHoles - numPrevHoles) * negativeMoves[0] + positiveMoves[0] + (newHeight - currentHeight) * negativeMoves[1];
 		
-		// set prevHeight to newHeight to ensure everything is fine
+		//System.out.print(" " + (newHeight - currentHeight) + " ");
+		System.out.println("newHeight: " + newHeight + " Current Height: " + currentHeight + " Fitness: " +  fitness + " Holes Generated: " + (numHoles-numPrevHoles));
 		
-		prevHeight = newHeight;
-		numPrevHoles = numHoles;
+		for(int i = 0; i < possibleBoardState.length; i++)
+		{
+			for (int x = 0; x < possibleBoardState[i].length; x++)
+			{
+				if(board[i][x])
+					System.out.print("1");
+				else
+					System.out.print("0");
+			}
+			System.out.println();
+		}
 		
 		return fitness;
 	}
@@ -534,6 +653,8 @@ public class TetrisML
 		}
 		
 		numHoles = count;
+		if (numHoles < 0)
+			numHoles = 0;
 	}
 	
 	/*public static void calculateHoles(boolean[][] grid)
@@ -574,35 +695,84 @@ public class TetrisML
 	{
 		int height = 0;
 		
+		boolean[][] piece = getPiece(possibleBoardState);
+		
+		boolean correct = false;
+		
+		for (int y = 19; y >= 0; y--)
+		{
+			for (int x = 0; x < 10; x++)
+			{
+				if (piece[y][x] != false)
+				{
+					y = -1;
+					x = 10;
+					correct = true; //fix this
+				}
+			}
+		}
+		
+		if(!correct)
+		{
+			piece = board;
+			//System.out.println("Piece now refers to board");
+		}	
+		
+		boolean initFind = false;
+		
 		for (int y = 19; y >= 0; y--)
 		{
 			boolean found = false;
 			
 			for (int x = 0; x < 10; x++)
 			{
-				if (possibleBoardState[y][x] && possibleBoardState[y][x] != board[y][x])
+				if (piece[y][x])
 				{
-					found = true;
-					height++;
 					// Terminate inner loop
 					x = 10;
+					found = true;
+					initFind = true;
 				}
 			}
 			
-			// If a true value is found, keep going
-			// However, if no true values are found, terminate the outer loop
-			// and return the height
-			if (!found)
+			height++;
+			
+			if (!found && initFind)
 			{
-				y = -1;
-			}
-			else
-			{
-				found = false;
+				height--;
+				if (height == 20)
+					return 0;
+				return height;
 			}
 		}
 		
+		if (height == 20)
+			return 0;
 		return height;
+	}
+	
+	public static boolean[][] getPiece(boolean[][] possibleBoardState)
+	{
+		boolean[][] piece = new boolean[20][10];
+		
+		//System.out.println("Generating piece");
+		for (int y = 0; y < 20; y++)
+		{	
+			for (int x = 0; x < 10; x++)
+			{
+				if (possibleBoardState[y][x] != board[y][x])
+				{
+					piece[y][x] = true;
+				}
+
+				/*if (piece[y][x])
+					System.out.print("1");
+				else
+					System.out.print("0");*/
+			}
+			//System.out.println();
+		}
+		return piece;
 	}
 }
 

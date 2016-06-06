@@ -8,7 +8,6 @@ package main;
 //**************************************************
 
 import net.sourceforge.jetris.JetrisMainFrame;
-
 import java.lang.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -32,7 +31,7 @@ public class TestrisMachine
 			
 			try
 			{
-				Thread.sleep(5000);
+				Thread.sleep(2000);
 			}
 			catch (InterruptedException e)
 			{

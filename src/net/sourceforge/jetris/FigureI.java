@@ -34,4 +34,9 @@ extends Figure {
     protected Color getGolor() {
         return COL_I;
     }
+    
+    public String toString()
+    {
+    	return "I";
+    }
 }

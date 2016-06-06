@@ -4,6 +4,7 @@
 package net.sourceforge.jetris;
 
 import java.awt.Color;
+
 import net.sourceforge.jetris.Figure;
 
 class FigureL
@@ -105,5 +106,10 @@ extends Figure {
 
     protected Color getGolor() {
         return COL_L;
+    }
+    
+    public String toString()
+    {
+    	return "L";
     }
 }
